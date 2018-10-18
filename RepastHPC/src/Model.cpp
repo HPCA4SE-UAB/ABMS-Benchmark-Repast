@@ -328,7 +328,7 @@ void RepastHPCModel::doSomething(){
 	context.selectAgents(repast::SharedContext<RepastHPCAgent>::LOCAL, countOfAgents, agents);
 	std::vector<RepastHPCAgent*>::iterator it = agents.begin();
 	while(it != agents.end()){
-        	std::cout << "Play agent: " << (*it)->getId() << std::endl;
+        	//std::cout << "Play agent: " << (*it)->getId() << std::endl;
 		(*it)->play(&context, discreteSpace);
         	(*it)->compute();
 		it++;
@@ -346,7 +346,7 @@ void RepastHPCModel::doSomething(){
 
 		if (reproductionrequest){
 			repast::AgentId id = (*it)->getId();
-			std::cout << "Agent to reproduct: " << id << std::endl;
+			//std::cout << "Agent to reproduct: " << id << std::endl;
 
 			int rank = repast::RepastProcess::instance()->rank();
  			std::vector<int> initialLocation;
@@ -359,7 +359,7 @@ void RepastHPCModel::doSomething(){
 			context.addAgent(agent);
 			discreteSpace->moveTo(newid, initialLocation);
 
-			std::cout << "Agent created: " << newid << std::endl;
+			//std::cout << "Agent created: " << newid << std::endl;
 		}
 
 		it++;
@@ -372,7 +372,7 @@ void RepastHPCModel::doSomething(){
 
 		if (dierequest){
 			repast::AgentId id = (*it)->getId();
-			std::cout << "Agent to die: " << id << std::endl;
+			//std::cout << "Agent to die: " << id << std::endl;
 			repast::RepastProcess::instance()->agentRemoved(id);
 			context.removeAgent(id);
 		}
@@ -400,7 +400,6 @@ void RepastHPCModel::doSomething(){
  * returns: -
  */
 void RepastHPCModel::initSchedule(repast::ScheduleRunner& runner){
-	runner.scheduleEvent(1, repast::Schedule::FunctorPtr(new repast::MethodFunctor<RepastHPCModel> (this, &RepastHPCModel::requestAgents)));
 	runner.scheduleEvent(2, 1, repast::Schedule::FunctorPtr(new repast::MethodFunctor<RepastHPCModel> (this, &RepastHPCModel::doSomething)));
 	runner.scheduleEndEvent(repast::Schedule::FunctorPtr(new repast::MethodFunctor<RepastHPCModel> (this, &RepastHPCModel::recordResults)));
 	runner.scheduleStop(stopAt);

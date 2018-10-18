@@ -1,14 +1,14 @@
 #!/bin/bash
 #SBATCH --partition=nodo.q
-#SBATCH --nodes=9
-#SBATCH --ntasks=100                  # Number of MPI ranks
+#SBATCH --nodes=3
+#SBATCH --ntasks=32                  # Number of MPI ranks
 #SBATCH --exclusive
 #SBATCH --time=10:00:00
 #SBATCH --output=output/outputslurm.%N.%j.out
 #SBATCH --error=output/outputslurm.%N.%j.err
 #SBATCH --mail-type=END
 #SBATCH --mail-type=FAIL
-#SBATCH --mail-user=amoreno@euss.cat
+#SBATCH --mail-user=xxxxx@bbbb.ffff
  
  
 pwd
@@ -37,8 +37,8 @@ export LD_LIBRARY_PATH=/home/caos/amoreno/sfw/repast_hpc-2.2.0/lib/:/home/caos/a
 #export TAU_TRACE=1
 #for a in 1 2 3 4 5 6 7 8 9 10; 
 #for a in 1 ; 
-#do mpiexec -n 32 /home/amoreno/AgentsModels/Model_Repast_tutorial_AlbanModel/SRC/work/bin/Demo_03.exe /home/amoreno/AgentsModels/Model_Repast_tutorial_AlbanModel/SRC/work/props/config.props /home/amoreno/AgentsModels/Model_Repast_tutorial_AlbanModel/SRC/work/props/model.propsX;
-mpiexec -n 100 /home/caos/amoreno/AgentsModels/Model_Repast_tutorial_AlbanModel/SRC/work/bin/Demo_03.exe /home/caos/amoreno/AgentsModels/Model_Repast_tutorial_AlbanModel/SRC/work/props/config.props /home/caos/amoreno/AgentsModels/Model_Repast_tutorial_AlbanModel/SRC/work/props/model.props;
+#do mpiexec -n 32 bin/Model.exe props/config.props props/model.props;
+mpiexec -n 32 bin/Model.exe props/config.props props/model.props;
 #pprof -p > /home/amoreno/AgentsModels/Model_Repast_tutorial_AlbanModel/SRC/work/output/pprof_out$a;
 #done
 date

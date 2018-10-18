@@ -36,8 +36,8 @@ export TAU_COMM_MATRIX=1
 export LD_LIBRARY_PATH=/home/caos/amoreno/sfw/repast_hpc-2.2.0/lib/:/home/caos/amoreno/sfw/Boost/Boost_1.61/lib/:$LD_LIBRARY_PATH
 #export TAU_TRACE=1
 for a in 1 2;
-do mpiexec -n 32 /home/caos/amoreno/AgentsModels/Model_Repast_tutorial_AlbanModel/SRC/work/bin/Demo_03_0$a.exe /home/caos/amoreno/AgentsModels/Model_Repast_tutorial_AlbanModel/SRC/work/props/config.props /home/caos/amoreno/AgentsModels/Model_Repast_tutorial_AlbanModel/SRC/work/props/model.props6 >output/sortida$a.txt;
-pprof -p > /home/caos/amoreno/AgentsModels/Model_Repast_tutorial_AlbanModel/SRC/work/output/pprof_out$a;
+do mpiexec -n 32 bin/Model$a.exe props/config.props props/model.props6 >output/sortida$a.txt;
+pprof -p > work/output/pprof_out$a;
 done
 
 date

@@ -51,11 +51,11 @@
 
 //-birth_rate: birth probability, inteval [0,1], 0: no birth, 1: 100% probability of birth
 //Select the desired value at RepastHPC/include/Agent.h
-#define DEATH_RATE 0.2
+#define DEATH_RATE 0.02
 
 //-death_rate: death probability, inteval [0,1], 0: no death, 1: 100% probability of death
 //Select the desired value at RepastHPC/include/Agent.h
-#define BIRTH_RATE 0.2
+#define BIRTH_RATE 0.02
 
 //-Birth rate center, position where birth_rate aplies totaly, from this point it goes down lineally until borders of space
 //Select the desired center_birth_x and center_birth_y at RepastHPC/include/Agent.h

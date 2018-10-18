@@ -48,7 +48,7 @@ clean: clean_compiled_files clean_output_files remove_subdirectories
 
 
 .PHONY: RepastHPC_Model_Compilation
-RepastHPC_Demo_03: clean_compiled_files
+RepastHPC_Model_Compilation: clean_compiled_files
 	$(MPICXX) $(REPAST_HPC_DEFINES) $(BOOST_INCLUDE) $(REPAST_HPC_INCLUDE) -I./include -c ./src/Main.cpp -o ./objects/Main.o
 	$(MPICXX) $(REPAST_HPC_DEFINES) $(BOOST_INCLUDE) $(REPAST_HPC_INCLUDE) -I./include -c ./src/Model.cpp -o ./objects/Model.o
 	$(MPICXX) $(REPAST_HPC_DEFINES) $(BOOST_INCLUDE) $(REPAST_HPC_INCLUDE) -I./include -c ./src/Agent.cpp -o ./objects/Agent.o
