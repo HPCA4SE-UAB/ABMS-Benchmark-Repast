@@ -1,0 +1,17 @@
+#!/bin/sh
+#echo "Obtenir resultats de l'execució"
+
+num_agents=(1000 2000 4000 6000 8000 10000);
+i=0;
+#printf 'num_agents total_time main_time compute_time play_time total_byteis \n';
+
+for a in 1 2 3 4 5 6;
+do
+        total_time=$(grep "Execution time (msecs):" output/sortida${a}.txt | awk '{print $4}');
+        main_time=$(grep mean -A 20 output/pprof_out$a | grep main | awk '{print $3}');
+        compute_time=$(grep mean -A 20 output/pprof_out$a | grep compute | awk '{print $3}');
+        play_time=$(grep mean -A 20 output/pprof_out$a | grep play | awk '{print $3}');
+        total_byte=$(grep "Message size received from all nodes"  output/pprof_out$a | awk '{s+=($1*$4)} END {printf "%d", s}');
+        printf '%d %s %s %s %s %s\n' ${num_agents[i]} $total_time $main_time $compute_time $play_time $total_byte;
+        let i++;
+done

@@ -1,0 +1,9 @@
+#Properties file
+stop.at = 100
+count.of.agents = 250
+random.seed = 1
+
+# these must multiply to total number of processes
+proc.per.x = 2
+proc.per.y = 2
+

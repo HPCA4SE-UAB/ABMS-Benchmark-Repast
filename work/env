@@ -1,0 +1,27 @@
+#*******************************
+#
+# Repast HPC Tutorial 
+# ENVIRONMENT DEFINITIONS
+#
+#*******************************
+
+#MPICXX=/usr/local/bin/mpicxx -std=c++11 
+#MPICXX=/usr/bin/mpic++ -std=c++11 
+##MPICXX=/opt/mpich-3.2/bin/mpicxx -std=c++11
+#MPICXX=/opt/openmpi-1.8.4_gcc-4.9.1/bin/mpic++ -std=c++11
+
+#MPICXX=tau_cxx.sh
+MPICXX=tau_cxx.sh -std=c++11
+#MPICXX=taucxx
+
+BOOST_INCLUDE=-I/home/caos/amoreno/sfw/Boost/Boost_1.61/include/ -I/home/caos/amoreno/sfw/include/
+BOOST_LIB_DIR=-L/home/caos/amoreno/sfw/Boost/Boost_1.61/lib/ -L/home/caos/amoreno/sfw/lib/
+#BOOST_LIBS=-lboost_mpi-mt-s -lboost_serialization-mt-s -lboost_system-mt-s -lboost_filesystem-mt-s
+BOOST_LIBS=-lboost_mpi-mt -lboost_serialization-mt -lboost_system-mt -lboost_filesystem-mt
+REPAST_HPC_INCLUDE=-I/home/caos/amoreno/sfw/repast_hpc-2.2.0/include/
+REPAST_HPC_LIB_DIR=-L/home/caos/amoreno/sfw/repast_hpc-2.2.0/lib/ -L/home/caos/amoreno/sfw/tau-2.26.3/x86_64/lib/
+
+REPAST_HPC_LIB=-lrepast_hpc-2.2.0
+
+
+REPAST_HPC_DEFINES=-tau_makefile=/home/caos/amoreno/sfw/tau-2.26.3/x86_64/lib/Makefile.tau-mpi-pdt -tau_options=-optCompInst

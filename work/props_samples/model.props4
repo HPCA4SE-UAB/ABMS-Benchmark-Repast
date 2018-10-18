@@ -1,0 +1,9 @@
+#Properties file  32 processos 6000 agents
+stop.at = 100
+count.of.agents = 188
+random.seed = 1
+
+# these must multiply to total number of processes
+proc.per.x = 8
+proc.per.y = 4
+
