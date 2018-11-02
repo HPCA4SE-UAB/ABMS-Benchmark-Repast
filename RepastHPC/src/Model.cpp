@@ -409,6 +409,7 @@ void RepastHPCModel::doSomething(){
 			//std::cout << "Agent to die: " << id << std::endl;
 			repast::RepastProcess::instance()->agentRemoved(id);
 			context.removeAgent(id);
+			countOfAgents--;
 		}
 
 		it++;
