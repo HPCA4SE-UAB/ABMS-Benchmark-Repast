@@ -180,6 +180,7 @@ int DataSource_AgentTotals::getData(){
 DataSource_AgentCTotals::DataSource_AgentCTotals(repast::SharedContext<RepastHPCAgent>* c) : context(c){ 
 }
 
+
 /*
  *    Class: DataSource_AgentCTotals
  * Function: getData 
@@ -201,6 +202,36 @@ int DataSource_AgentCTotals::getData(){
 	}
 	return sum;
 }
+
+/*
+ *    Class: DataSource_AgentNumber
+ * Function: DataSource_AgentNumber 
+ * --------------------
+ * DataSource_AgentNumber constructor
+ * 
+ * c: context
+ *
+ * returns: -
+ */
+DataSource_AgentNumber::DataSource_AgentNumber(repast::SharedContext<RepastHPCAgent>* c, RepastHPCModel* m) : context(c), model(m){ 
+}
+
+
+/*
+ *    Class: DataSource_AgentNumber
+ * Function: getData 
+ * --------------------
+ * Get total sum of local number of agents counter
+ * 
+ * -: -
+ *
+ * returns: sum
+ */
+int DataSource_AgentNumber::getData(){
+	return model->getcountOfAgents();
+}
+
+
 
 /*
  *    Class: RepastHPCModel
@@ -253,6 +284,9 @@ RepastHPCModel::RepastHPCModel(std::string propsFile, int argc, char** argv, boo
 
 	DataSource_AgentCTotals* agentCTotals_DataSource = new DataSource_AgentCTotals(&context);
 	builder.addDataSource(createSVDataSource("C", agentCTotals_DataSource, std::plus<int>()));
+
+	DataSource_AgentNumber* agentNumber_DataSource = new DataSource_AgentNumber(&context, this);
+	builder.addDataSource(createSVDataSource("NumAgents", agentNumber_DataSource, std::plus<int>()));
 
 	// Use the builder to create the data set
 	agentValues = builder.createDataSet();
@@ -431,5 +465,20 @@ void RepastHPCModel::recordResults(){
     }
 }
 
+
+/*
+ *    Class: RepastHPCModel
+ * Function: getcountOfAgents
+ * --------------------
+ * Get countOfAgents
+ * 
+ * -: -
+ *
+ * returns: countOfAgents
+ */
+
+int RepastHPCModel::getcountOfAgents(){
+	return countOfAgents;
+}
 
 	

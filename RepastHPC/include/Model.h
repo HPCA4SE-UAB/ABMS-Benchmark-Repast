@@ -99,6 +99,7 @@ public:
 	int getData();
 };
 
+
 class RepastHPCModel{
 	int stopAt;
 	int countOfAgents;
@@ -124,6 +125,17 @@ public:
 	void doSomething();
 	void initSchedule(repast::ScheduleRunner& runner);
 	void recordResults();
+	int getcountOfAgents();
+};
+
+
+class DataSource_AgentNumber : public repast::TDataSource<int>{
+private:
+	repast::SharedContext<RepastHPCAgent>* context;
+	RepastHPCModel* model;	
+public:
+	DataSource_AgentNumber(repast::SharedContext<RepastHPCAgent>* c, RepastHPCModel* m);
+	int getData();
 };
 
 #endif
