@@ -341,6 +341,32 @@ void RepastHPCModel::init(){
 	}
 }
 
+
+/*
+ *    Class: RepastHPCModel
+ * Function: printAgentsPosition 
+ * --------------------
+ * Print agents position
+ * 
+ * -: -
+ *
+ * returns: -
+ */
+void RepastHPCModel::printAgentsPosition(){
+	int rank = repast::RepastProcess::instance()->rank();
+
+        std::vector<RepastHPCAgent*> agents;
+        context.selectAgents(repast::SharedContext<RepastHPCAgent>::LOCAL, countOfAgents, agents);
+        std::vector<RepastHPCAgent*>::iterator it = agents.begin();
+        while(it != agents.end()){
+		std::vector<int> agentLoc;
+		discreteSpace->getLocation((*it)->getId(), agentLoc);
+		repast::Point<int> agentLocation(agentLoc);
+		std::cout << "T(" << repast::RepastProcess::instance()->getScheduleRunner().currentTick() << ")" << "P(" << rank << ") " << (*it)->getId() << " " << agentLocation << std::endl;
+                it++;
+	}
+}
+
 /*
  *    Class: RepastHPCModel
  * Function: doSomething
@@ -444,6 +470,9 @@ void RepastHPCModel::initSchedule(repast::ScheduleRunner& runner){
 	runner.scheduleEvent(10.6, 10, repast::Schedule::FunctorPtr(new repast::MethodFunctor<repast::DataSet>(agentValues, &repast::DataSet::write)));
 	runner.scheduleEndEvent(repast::Schedule::FunctorPtr(new repast::MethodFunctor<repast::DataSet>(agentValues, &repast::DataSet::record)));
 	runner.scheduleEndEvent(repast::Schedule::FunctorPtr(new repast::MethodFunctor<repast::DataSet>(agentValues, &repast::DataSet::write)));
+	runner.scheduleEvent(3, repast::Schedule::FunctorPtr(new repast::MethodFunctor<RepastHPCModel> (this, &RepastHPCModel::printAgentsPosition)));
+	runner.scheduleEvent(50, repast::Schedule::FunctorPtr(new repast::MethodFunctor<RepastHPCModel> (this, &RepastHPCModel::printAgentsPosition)));
+	runner.scheduleEndEvent(repast::Schedule::FunctorPtr(new repast::MethodFunctor<RepastHPCModel> (this, &RepastHPCModel::printAgentsPosition)));
 }
 
 /*
