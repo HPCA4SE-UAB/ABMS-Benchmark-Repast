@@ -122,10 +122,10 @@ public:
 	void requestAgents();
 	void cancelAgentRequests();
 	void removeLocalAgents();
+	void printAgentsPosition();
 	void doSomething();
 	void initSchedule(repast::ScheduleRunner& runner);
 	void recordResults();
-	int getcountOfAgents();
 };
 
 
