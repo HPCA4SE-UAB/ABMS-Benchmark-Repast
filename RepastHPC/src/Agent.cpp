@@ -29,6 +29,7 @@
 #include <fftw3.h>
 #include <math.h>
 #include <string.h>
+#include "Model.h"
 
 /*
  *    Class: RepastHPCAgent  
@@ -250,27 +251,13 @@ void RepastHPCAgent::move(repast::SharedDiscreteSpace<RepastHPCAgent, repast::Wr
 	std::vector<int> agentLoc;
 	space->getLocation(id_, agentLoc);
 	std::vector<int> agentNewLoc;
-	int maxx = (int)space->dimensions().origin().getX() + (int)space->dimensions().extents().getX();
-	int maxy = (int)space->dimensions().origin().getY() + (int)space->dimensions().extents().getY();
-	int minx = (int)space->dimensions().origin().getX();
-	int miny = (int)space->dimensions().origin().getY();
 
 	int nextx = agentLoc[0] + (repast::Random::instance()->nextDouble() < 0.5 ? -1 : 1);
 	int nexty = agentLoc[1] + (repast::Random::instance()->nextDouble() < 0.5 ? -1 : 1);
 
-	if (nextx > maxx)
-		agentNewLoc.push_back(maxx);
-	else if (nextx < minx)
-		agentNewLoc.push_back(minx);
-	else
-		agentNewLoc.push_back(nextx);	
+	agentNewLoc.push_back(nextx);
+	agentNewLoc.push_back(nexty);
 
-	if (nexty > maxy)
-		agentNewLoc.push_back(maxy);       
-	else if (nexty < miny)
-		agentNewLoc.push_back(miny);       
-	else
-	agentNewLoc.push_back(nexty);      
 	space->moveTo(id_,agentNewLoc);
 }
 
@@ -289,13 +276,8 @@ bool RepastHPCAgent::die(repast::SharedDiscreteSpace<RepastHPCAgent, repast::Wra
 	space->getLocation(id_, agentLoc);
 	int x = agentLoc[0];
 	int y = agentLoc[1];
-	int maxx = (int)space->dimensions().origin().getX() + (int)space->dimensions().extents().getX();
-	int maxy = (int)space->dimensions().origin().getY() + (int)space->dimensions().extents().getY();
-	int minx = (int)space->dimensions().origin().getX();
-	int miny = (int)space->dimensions().origin().getY();
-	int HEIGHT = maxx - minx;
-	int WIDTH = maxy - miny;
 	float death_rate_factor = DEATH_RATE * (1 - fmin(1 , sqrt( pow(abs(x-CENTER_DEATH_X),2) + pow(abs(x-CENTER_DEATH_Y),2) )/((HEIGHT+WIDTH)/2)));
+printf("amv:death: %f\n", death_rate_factor);
 	return (repast::Random::instance()->nextDouble() < death_rate_factor ? true : false);
 }
 
@@ -314,13 +296,8 @@ bool RepastHPCAgent::reproduction(repast::SharedDiscreteSpace<RepastHPCAgent, re
         space->getLocation(id_, agentLoc);
         int x = agentLoc[0];
         int y = agentLoc[1];
-        int maxx = (int)space->dimensions().origin().getX() + (int)space->dimensions().extents().getX();
-        int maxy = (int)space->dimensions().origin().getY() + (int)space->dimensions().extents().getY();
-        int minx = (int)space->dimensions().origin().getX();
-        int miny = (int)space->dimensions().origin().getY();
-        int HEIGHT = maxx - minx;
-        int WIDTH = maxy - miny;
 	float birth_rate_factor = BIRTH_RATE * (1 - fmin(1 , sqrt( pow(abs(x-CENTER_BIRTH_X),2) + pow(abs(y-CENTER_BIRTH_Y),2) )/((HEIGHT+WIDTH)/2)));
+printf("amv:birth: %f\n", birth_rate_factor);
 	return (repast::Random::instance()->nextDouble() < birth_rate_factor ? true : false);
 }
 
