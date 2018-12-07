@@ -203,24 +203,22 @@ void RepastHPCAgent::compute() {
 void RepastHPCAgent::play(repast::SharedContext<RepastHPCAgent>* context,
                               repast::SharedDiscreteSpace<RepastHPCAgent, repast::WrapAroundBorders, repast::SimpleAdder<RepastHPCAgent> >* space){
 	std::vector<RepastHPCAgent*> agentsToPlay;
-	char compm[COM_BUFFER_SIZE] = "123456789"; 
-	char compm1[COM_BUFFER_SIZE]; 
 	int i=0;
     
 	std::vector<int> agentLoc;
 	space->getLocation(id_, agentLoc);
 	repast::Point<int> center(agentLoc);
 	repast::Moore2DGridQuery<RepastHPCAgent> moore2DQuery(space);
-	moore2DQuery.query(center,  RADIOUS, false, agentsToPlay);
-    
+	moore2DQuery.query(center,  RADIOUS, true, agentsToPlay);
     
 	double cPayoff     = 0;
 	double totalPayoff = 0;
 	std::vector<RepastHPCAgent*>::iterator agentToPlay = agentsToPlay.begin();
 	while(agentToPlay != agentsToPlay.end()){
-		std::vector<int> otherLoc;
-		space->getLocation((*agentToPlay)->getId(), otherLoc);
-		repast::Point<int> otherPoint(otherLoc);
+		if ( id_ == ((*agentToPlay)->getId()) ){ 
+			agentToPlay++;	
+			continue; // Do not play with himself
+		}
 
 		bool iCooperated = cooperate();                          // Do I cooperate?
 		double payoff = (iCooperated ?
@@ -231,6 +229,7 @@ void RepastHPCAgent::play(repast::SharedContext<RepastHPCAgent>* context,
 		
 		agentToPlay++;
 		i++;
+		if (i >= MAX_AGENTS_TO_PLAY) break;	//Control max number agents to play wiht
     	}
 	c      += cPayoff;
 	total  += totalPayoff;
@@ -277,7 +276,7 @@ bool RepastHPCAgent::die(repast::SharedDiscreteSpace<RepastHPCAgent, repast::Wra
 	int x = agentLoc[0];
 	int y = agentLoc[1];
 	float death_rate_factor = DEATH_RATE * (1 - fmin(1 , sqrt( pow(abs(x-CENTER_DEATH_X),2) + pow(abs(x-CENTER_DEATH_Y),2) )/((HEIGHT+WIDTH)/2)));
-printf("amv:death: %f\n", death_rate_factor);
+
 	return (repast::Random::instance()->nextDouble() < death_rate_factor ? true : false);
 }
 
@@ -297,7 +296,7 @@ bool RepastHPCAgent::reproduction(repast::SharedDiscreteSpace<RepastHPCAgent, re
         int x = agentLoc[0];
         int y = agentLoc[1];
 	float birth_rate_factor = BIRTH_RATE * (1 - fmin(1 , sqrt( pow(abs(x-CENTER_BIRTH_X),2) + pow(abs(y-CENTER_BIRTH_Y),2) )/((HEIGHT+WIDTH)/2)));
-printf("amv:birth: %f\n", birth_rate_factor);
+
 	return (repast::Random::instance()->nextDouble() < birth_rate_factor ? true : false);
 }
 

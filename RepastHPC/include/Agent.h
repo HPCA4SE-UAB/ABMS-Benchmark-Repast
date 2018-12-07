@@ -49,6 +49,10 @@
 //Select the desired radius at RepastHPC/include/Agent.h
 #define RADIOUS 10
 
+//-Max number of agents to play with
+//Select the desired value at RepastHPC/include/Agent.h
+#define MAX_AGENTS_TO_PLAY 10
+
 //-birth_rate: birth probability, inteval [0,1], 0: no birth, 1: 100% probability of birth
 //Select the desired value at RepastHPC/include/Agent.h
 #define DEATH_RATE 0.02
