@@ -228,7 +228,14 @@ DataSource_AgentNumber::DataSource_AgentNumber(repast::SharedContext<RepastHPCAg
  * returns: sum
  */
 int DataSource_AgentNumber::getData(){
-	return model->getcountOfAgents();
+	int sum = 0;
+	repast::SharedContext<RepastHPCAgent>::const_local_iterator iter    = context->localBegin();
+	repast::SharedContext<RepastHPCAgent>::const_local_iterator iterEnd = context->localEnd();
+	while( iter != iterEnd) {
+		sum++;
+		iter++;
+	}
+	return sum;
 }
 
 
@@ -356,7 +363,8 @@ void RepastHPCModel::printAgentsPosition(){
 	int rank = repast::RepastProcess::instance()->rank();
 
         std::vector<RepastHPCAgent*> agents;
-        context.selectAgents(repast::SharedContext<RepastHPCAgent>::LOCAL, countOfAgents, agents);
+        //context.selectAgents(repast::SharedContext<RepastHPCAgent>::LOCAL, countOfAgents, agents);
+        context.selectAgents(repast::SharedContext<RepastHPCAgent>::LOCAL, agents);
         std::vector<RepastHPCAgent*>::iterator it = agents.begin();
         while(it != agents.end()){
 		std::vector<int> agentLoc;
@@ -385,7 +393,8 @@ void RepastHPCModel::doSomething(){
 	if(repast::RepastProcess::instance()->rank() == whichRank) std::cout << " TICK " << repast::RepastProcess::instance()->getScheduleRunner().currentTick() << std::endl;
 	
 	std::vector<RepastHPCAgent*> agents;
-	context.selectAgents(repast::SharedContext<RepastHPCAgent>::LOCAL, countOfAgents, agents);
+	//context.selectAgents(repast::SharedContext<RepastHPCAgent>::LOCAL, countOfAgents, agents);
+	context.selectAgents(repast::SharedContext<RepastHPCAgent>::LOCAL, agents);
 	std::vector<RepastHPCAgent*>::iterator it = agents.begin();
 	while(it != agents.end()){
         	//std::cout << "Play agent: " << (*it)->getId() << std::endl;
@@ -435,7 +444,6 @@ void RepastHPCModel::doSomething(){
 			//std::cout << "Agent to die: " << id << std::endl;
 			repast::RepastProcess::instance()->agentRemoved(id);
 			context.removeAgent(id);
-			countOfAgents--;
 		}
 
 		it++;
@@ -470,8 +478,8 @@ void RepastHPCModel::initSchedule(repast::ScheduleRunner& runner){
 	runner.scheduleEvent(10.6, 10, repast::Schedule::FunctorPtr(new repast::MethodFunctor<repast::DataSet>(agentValues, &repast::DataSet::write)));
 	runner.scheduleEndEvent(repast::Schedule::FunctorPtr(new repast::MethodFunctor<repast::DataSet>(agentValues, &repast::DataSet::record)));
 	runner.scheduleEndEvent(repast::Schedule::FunctorPtr(new repast::MethodFunctor<repast::DataSet>(agentValues, &repast::DataSet::write)));
-	runner.scheduleEvent(3, repast::Schedule::FunctorPtr(new repast::MethodFunctor<RepastHPCModel> (this, &RepastHPCModel::printAgentsPosition)));
-	runner.scheduleEvent(50, repast::Schedule::FunctorPtr(new repast::MethodFunctor<RepastHPCModel> (this, &RepastHPCModel::printAgentsPosition)));
+	//runner.scheduleEvent(3, repast::Schedule::FunctorPtr(new repast::MethodFunctor<RepastHPCModel> (this, &RepastHPCModel::printAgentsPosition)));
+	//runner.scheduleEvent(50, repast::Schedule::FunctorPtr(new repast::MethodFunctor<RepastHPCModel> (this, &RepastHPCModel::printAgentsPosition)));
 	runner.scheduleEndEvent(repast::Schedule::FunctorPtr(new repast::MethodFunctor<RepastHPCModel> (this, &RepastHPCModel::printAgentsPosition)));
 }
 
@@ -497,19 +505,3 @@ void RepastHPCModel::recordResults(){
 }
 
 
-/*
- *    Class: RepastHPCModel
- * Function: getcountOfAgents
- * --------------------
- * Get countOfAgents
- * 
- * -: -
- *
- * returns: countOfAgents
- */
-
-int RepastHPCModel::getcountOfAgents(){
-	return countOfAgents;
-}
-
-	
