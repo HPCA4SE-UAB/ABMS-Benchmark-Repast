@@ -229,8 +229,9 @@ void RepastHPCAgent::play(repast::SharedContext<RepastHPCAgent>* context,
 		
 		agentToPlay++;
 		i++;
-		if (i >= MAX_AGENTS_TO_PLAY) break;	//Control max number agents to play wiht
+		if (i >= MAX_AGENTS_TO_PLAY) break;	//Control max number agents to play with
     	}
+
 	c      += cPayoff;
 	total  += totalPayoff;
 }
@@ -275,7 +276,7 @@ bool RepastHPCAgent::die(repast::SharedDiscreteSpace<RepastHPCAgent, repast::Wra
 	space->getLocation(id_, agentLoc);
 	int x = agentLoc[0];
 	int y = agentLoc[1];
-	float death_rate_factor = DEATH_RATE * (1 - fmin(1 , sqrt( pow(abs(x-CENTER_DEATH_X),2) + pow(abs(x-CENTER_DEATH_Y),2) )/((HEIGHT+WIDTH)/2)));
+	float death_rate_factor = DEATH_RATE * (1 - fmin(1 , sqrt( pow(abs(x-CENTER_DEATH_X),2) + pow(abs(y-CENTER_DEATH_Y),2) )/((HEIGHT+WIDTH)/2)));
 
 	return (repast::Random::instance()->nextDouble() < death_rate_factor ? true : false);
 }
