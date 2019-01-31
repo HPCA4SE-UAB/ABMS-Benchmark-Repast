@@ -1,17 +1,27 @@
 #!/bin/sh
-#echo "Obtenir resultats de l'execució"
+#echo "Get results from execution"
 
-num_agents=(1000 2000 4000 6000 8000 10000);
-i=0;
-#printf 'num_agents total_time main_time compute_time play_time total_byteis \n';
+if [ "$#" -ne 2 ]; then
+  echo "Usage: $0 num_executions output_file" >&2
+  exit 1
+fi
 
-for a in 1 2 3 4 5 6;
+printf 'execution total_time main_time compute_time cooperate_time total_bytes c total agents \n';
+for a in $(seq 1 $1);
 do
-        total_time=$(grep "Execution time (msecs):" output/sortida${a}.txt | awk '{print $4}');
+        total_time=$(grep "Execution time" $2 | awk '{print $4}' | sed -n "$a"'p');
         main_time=$(grep mean -A 20 output/pprof_out$a | grep main | awk '{print $3}');
         compute_time=$(grep mean -A 20 output/pprof_out$a | grep compute | awk '{print $3}');
-        play_time=$(grep mean -A 20 output/pprof_out$a | grep play | awk '{print $3}');
+        cooperate_time=$(grep mean -A 20 output/pprof_out$a | grep cooperate | awk '{print $3}');
         total_byte=$(grep "Message size received from all nodes"  output/pprof_out$a | awk '{s+=($1*$4)} END {printf "%d", s}');
-        printf '%d %s %s %s %s %s\n' ${num_agents[i]} $total_time $main_time $compute_time $play_time $total_byte;
-        let i++;
+	if [ $a = "1" ]; then
+		c=$(sed -n 22p output/agent_total_data.csv | grep "100," | awk -F, '{print $3/$4}');
+		total=$(sed -n 22p output/agent_total_data.csv | grep "100," | awk -F, '{print $2/$4}');
+		n=$(sed -n 22p output/agent_total_data.csv | grep "100," | awk -F, '{print $4}');
+        else
+		c=$(sed -n 22p output/agent_total_data_$a.csv | grep "100," | awk -F, '{print $3/$4}');
+		total=$(sed -n 22p output/agent_total_data_$a.csv | grep "100," | awk -F, '{print $2/$4}');
+		n=$(sed -n 22p output/agent_total_data_$a.csv | grep "100," | awk -F, '{print $4}');
+	fi
+	printf '%d %s %s %s %s %s %s %s %s\n' $a $total_time $main_time $compute_time $cooperate_time $total_byte $c $total $n;
 done
