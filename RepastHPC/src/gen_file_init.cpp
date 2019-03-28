@@ -50,7 +50,7 @@ using namespace std;
 */
 
 int main(int argc, char *argv[]) { 
-	ofstream objetfichier, objetfichier2;
+	ofstream objetfichier, objetfichier2, objetfichier3;
 
 	uuid_t uuid;
 	Fnv32_t hash_val;
@@ -110,6 +110,18 @@ int main(int argc, char *argv[]) {
 
 	objetfichier.close();  
 	objetfichier2.close();  
+
+	//  Creating FFT vector fille
+	objetfichier3.open("fft.data", ios::out);
+
+	int fft_vector_size = atof(argv[4]);
+	objetfichier3 << fft_vector_size << "\n";
+
+       for(int i=1; i <= fft_vector_size; i++) {
+                 objetfichier3 << ((double)rand()/(RAND_MAX)) << " " << ((double)rand()/(RAND_MAX)) << "\n";
+	}
+
+	objetfichier3.close();
 	
 	return 0; 
 } 
