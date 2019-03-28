@@ -38,6 +38,9 @@
 
 #include "Agent.h"
 
+#include <string>
+
+
 //1. Model parameter selection
 
 //-Size of space where agents move arround
@@ -105,6 +108,7 @@ class RepastHPCModel{
 	int countOfAgents;
 	int procPerx;
 	int procPery;
+	std::string initialAgentsFile;
 
 	repast::Properties* props;
 	repast::SharedContext<RepastHPCAgent> context;
@@ -137,5 +141,6 @@ public:
 	DataSource_AgentNumber(repast::SharedContext<RepastHPCAgent>* c, RepastHPCModel* m);
 	int getData();
 };
+
 
 #endif

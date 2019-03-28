@@ -256,11 +256,12 @@ int DataSource_AgentNumber::getData(){
 RepastHPCModel::RepastHPCModel(std::string propsFile, int argc, char** argv, boost::mpi::communicator* comm): context(comm){
 	props = new repast::Properties(propsFile, argc, argv, comm);
 	stopAt = repast::strToInt(props->getProperty("stop.at"));
-	countOfAgents = repast::strToInt(props->getProperty("count.of.agents"));
 
 	procPerx = repast::strToInt(props->getProperty("proc.per.x"));
 	procPery = repast::strToInt(props->getProperty("proc.per.y"));
 
+	initialAgentsFile = props->getProperty("initial.agents.file");
+	
 	initializeRandom(*props, comm);
 	if(repast::RepastProcess::instance()->rank() == 0) props->writeToSVFile("./output/record.csv");
 	provider = new RepastHPCAgentPackageProvider(&context);
@@ -329,23 +330,39 @@ RepastHPCModel::~RepastHPCModel(){
  */
 void RepastHPCModel::init(){
 	int rank = repast::RepastProcess::instance()->rank();
-	int x,y;
-	char newm[COM_BUFFER_SIZE] = "123456789"; 
+	int x,y,z;
+	char newm[COM_BUFFER_SIZE] = "123456789";
+	FILE *fp;
+	u_int32_t id; 
 	
-	for(int i = 0; i < countOfAgents; i++){
+	float xmin = discreteSpace->dimensions().origin().getX();
+	float ymin = discreteSpace->dimensions().origin().getY();
+	float xmax = discreteSpace->dimensions().origin().getX() + discreteSpace->dimensions().extents().getX();
+	float ymax = discreteSpace->dimensions().origin().getY() + discreteSpace->dimensions().extents().getY();
+	countOfAgents = 0;
 
-                x = (int)discreteSpace->dimensions().origin().getX() + (repast::Random::instance()->nextDouble())*(int)discreteSpace->dimensions().extents().getX();
-                y = (int)discreteSpace->dimensions().origin().getY() + (repast::Random::instance()->nextDouble())*(int)discreteSpace->dimensions().extents().getY();
+	fp = fopen(initialAgentsFile.c_str(),"r");
 
-        	repast::Point<int> initialLocation(x,y);
+	while(1) {
+		fscanf(fp, "%u %d %d %d", &id, &x, &y, &z);
+		if( feof(fp) ) { 
+			break ;
+		}
+      
+		if ( ( x >= xmin) && (x < xmax) && (y >= ymin) && (y < ymax) ){
+	                repast::Point<int> initialLocation(x,y);
+        	        repast::AgentId id(countOfAgents, rank, 0);
+                	id.currentRank(rank);
+                	RepastHPCAgent* agent = new RepastHPCAgent(id);
+                	agent->setm(newm); 
+                	context.addAgent(agent);
+                	discreteSpace->moveTo(id, initialLocation);
+			countOfAgents++;
+			printf("rank %d: %d %d \n", rank, x, y);
+		}
 
-		repast::AgentId id(i, rank, 0);
-		id.currentRank(rank);
-		RepastHPCAgent* agent = new RepastHPCAgent(id);
-		agent->setm(newm); 
-		context.addAgent(agent);
-        	discreteSpace->moveTo(id, initialLocation);
-	}
+	}	
+	fclose(fp);
 }
 
 
