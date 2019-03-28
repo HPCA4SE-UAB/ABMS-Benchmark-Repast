@@ -1,7 +1,8 @@
 #Properties file 100 steps
 stop.at = 100
 random.seed = 1
-initial.agents.file =  0.data
+initial.agents.file =  props/0.data
+initial.fft.vector.file =  props/fft.data
 
 # these must multiply to total number of processes
 proc.per.x = 8

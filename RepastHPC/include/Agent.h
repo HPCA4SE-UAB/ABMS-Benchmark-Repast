@@ -26,6 +26,7 @@
 #ifndef AGENT
 #define AGENT
 
+#include <fftw3.h>
 #include "repast_hpc/AgentId.h"
 #include "repast_hpc/SharedContext.h"
 #include "repast_hpc/SharedDiscreteSpace.h"
@@ -38,12 +39,6 @@
 //#define COM_BUFFER_SIZE 64
 //#define COM_BUFFER_SIZE 32
 //#define COM_BUFFER_SIZE 16
-
-//-Size of FFT vector
-//Select the desired value of FFT_VECTOR_SIZE at RepastHPC/include/Agent.h
-#define FFT_VECTOR_SIZE 16384
-//#define FFT_VECTOR_SIZE 512
-//#define FFT_VECTOR_SIZE 16
 
 //-Interaction radius between agents
 //Select the desired radius at RepastHPC/include/Agent.h
@@ -76,15 +71,18 @@
 class RepastHPCAgent{
 	
 private:
-    repast::AgentId   id_;
+    repast::AgentId   	id_;
     double              c;
-    double          total;
-    char 				m[COM_BUFFER_SIZE]; //amv
+    double          	total;
+    char		m[COM_BUFFER_SIZE];
+    std::string 	initialFFTVectorFile;
+    int 		N;
+    fftw_complex 	*in, *out;
 	
 public:
-    RepastHPCAgent(repast::AgentId id);
+    RepastHPCAgent(repast::AgentId id, std::string _initialFFTVectorFile);
 	RepastHPCAgent(){}
-    RepastHPCAgent(repast::AgentId id, double newC, double newTotal, char newm[]);
+    RepastHPCAgent(repast::AgentId id, double newC, double newTotal, char newm[], std::string _initialFFTVectorFile);
 	
     ~RepastHPCAgent();
 	
@@ -96,6 +94,7 @@ public:
     /* Getters specific to this kind of Agent */
     double getC(){                                      return c;      }
     double getTotal(){                                  return total;  }
+    std::string getinitialFFTVectorFile(){		return initialFFTVectorFile;}
 	
     /* Setter */
     void set(int currentRank, double newC, double newTotal);
@@ -123,11 +122,12 @@ public:
     int    currentRank;
     double c;
     double total;
-    char	m[COM_BUFFER_SIZE]; //amv
+    char	m[COM_BUFFER_SIZE];
+    std::string         initialFFTVectorFile; 
 	
     /* Constructors */
     RepastHPCAgentPackage(); // For serialization
-    RepastHPCAgentPackage(int _id, int _rank, int _type, int _currentRank, double _c, double _total, char _m[]);
+    RepastHPCAgentPackage(int _id, int _rank, int _type, int _currentRank, double _c, double _total, char _m[], std::string _initialFFTVectorFile);
 	
     /* For archive packaging */
     template<class Archive>
@@ -139,6 +139,7 @@ public:
         ar & c;
         ar & total;
         ar & m;
+	ar & initialFFTVectorFile;
     }
 };
 

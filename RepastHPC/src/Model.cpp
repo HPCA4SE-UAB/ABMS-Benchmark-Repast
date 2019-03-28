@@ -66,7 +66,7 @@ void RepastHPCAgentPackageProvider::providePackage(RepastHPCAgent * agent, std::
     char newm[COM_BUFFER_SIZE];
     agent->getm(newm);
     
-    RepastHPCAgentPackage package(id.id(), id.startingRank(), id.agentType(), id.currentRank(), agent->getC(), agent->getTotal(), newm);
+    RepastHPCAgentPackage package(id.id(), id.startingRank(), id.agentType(), id.currentRank(), agent->getC(), agent->getTotal(), newm, agent->getinitialFFTVectorFile());
     out.push_back(package);
 }
 
@@ -113,7 +113,7 @@ RepastHPCAgentPackageReceiver::RepastHPCAgentPackageReceiver(repast::SharedConte
  */
 RepastHPCAgent * RepastHPCAgentPackageReceiver::createAgent(RepastHPCAgentPackage package){
     repast::AgentId id(package.id, package.rank, package.type, package.currentRank);
-    return new RepastHPCAgent(id, package.c, package.total, package.m);
+    return new RepastHPCAgent(id, package.c, package.total, package.m, package.initialFFTVectorFile);
 }
 
 /*
@@ -261,6 +261,7 @@ RepastHPCModel::RepastHPCModel(std::string propsFile, int argc, char** argv, boo
 	procPery = repast::strToInt(props->getProperty("proc.per.y"));
 
 	initialAgentsFile = props->getProperty("initial.agents.file");
+	initialFFTVectorFile = props->getProperty("initial.fft.vector.file");
 	
 	initializeRandom(*props, comm);
 	if(repast::RepastProcess::instance()->rank() == 0) props->writeToSVFile("./output/record.csv");
@@ -353,12 +354,12 @@ void RepastHPCModel::init(){
 	                repast::Point<int> initialLocation(x,y);
         	        repast::AgentId id(countOfAgents, rank, 0);
                 	id.currentRank(rank);
-                	RepastHPCAgent* agent = new RepastHPCAgent(id);
+                	RepastHPCAgent* agent = new RepastHPCAgent(id, initialFFTVectorFile);
                 	agent->setm(newm); 
                 	context.addAgent(agent);
                 	discreteSpace->moveTo(id, initialLocation);
 			countOfAgents++;
-			printf("rank %d: %d %d \n", rank, x, y);
+			//printf("rank %d: %d %d \n", rank, x, y);
 		}
 
 	}	
@@ -440,7 +441,7 @@ void RepastHPCModel::doSomething(){
 			repast::AgentId newid(countOfAgents, rank, 0);
 			countOfAgents++;
 			id.currentRank(rank);
-			RepastHPCAgent* agent = new RepastHPCAgent(newid);
+			RepastHPCAgent* agent = new RepastHPCAgent(newid, initialFFTVectorFile);
 			agent->setm(newm); //amv - inicialitzo el array
 			context.addAgent(agent);
 			discreteSpace->moveTo(newid, initialLocation);

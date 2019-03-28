@@ -109,6 +109,7 @@ class RepastHPCModel{
 	int procPerx;
 	int procPery;
 	std::string initialAgentsFile;
+	std::string initialFFTVectorFile;
 
 	repast::Properties* props;
 	repast::SharedContext<RepastHPCAgent> context;
