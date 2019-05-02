@@ -33,13 +33,13 @@ export TAU_MAKEFILE=/home/caos/amoreno/sfw/tau-2.26.3/x86_64/lib/Makefile.tau-mp
 export TAU_OPTIONS=-optCompInst
 export PATH=/home/caos/amoreno/sfw/tau-2.26.3/x86_64/bin/:$PATH
 export TAU_COMM_MATRIX=1
-export LD_LIBRARY_PATH=/home/caos/amoreno/sfw/repast_hpc-2.2.0/lib/:/home/caos/amoreno/sfw/Boost/Boost_1.61/lib/:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=/home/caos/amoreno/sfw/lib/:/home/caos/amoreno/sfw/Boost/Boost_1.61/lib/:$LD_LIBRARY_PATH
 #export TAU_TRACE=1
 #for a in 1 2 3 4 5 6 7 8 9 10; 
 #for a in 1 ; 
 #do mpiexec -n 32 bin/Model.exe props/config.props props/model.props;
 mpiexec -n 32 bin/Model.exe props/config.props props/model.props;
-#pprof -p > /home/amoreno/AgentsModels/Model_Repast_tutorial_AlbanModel/SRC/work/output/pprof_out$a;
+pprof -p > output/pprof_out;
 #done
 date
 
