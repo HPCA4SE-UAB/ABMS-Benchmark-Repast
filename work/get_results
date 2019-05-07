@@ -1,16 +1,17 @@
 #!/bin/sh
 #echo "Get results from execution"
 
-if [ "$#" -ne 2 ]; then
-  echo "Usage: $0 num_executions output_file" >&2
+if [ "$#" -ne 1 ]; then
+  echo "Usage: $0 num_executions" >&2
   exit 1
 fi
 
 printf 'execution total_time main_time compute_time play_time total_bytes c total agents \n';
 for a in $(seq 1 $1);
 do
-        total_time=$(grep "Execution time" $2 | awk '{print $4}' | sed -n "$a"'p');
-        main_time=$(grep mean -A 20 output/pprof_out$a | grep main | awk '{print $3}');
+        #total_time=$(grep "Execution time" output/sortida$a.txt | awk '{print $4}' | sed -n "$a"'p');
+        total_time=$(grep "Execution time" output/sortida$a.txt | awk '{print $4}');
+	main_time=$(grep mean -A 20 output/pprof_out$a | grep main | awk '{print $3}');
         compute_time=$(grep mean -A 20 output/pprof_out$a | grep compute | awk '{print $3}');
         play_time=$(grep mean -A 20 output/pprof_out$a | grep play | awk '{print $3}');
         total_byte=$(grep "Message size received from all nodes"  output/pprof_out$a | awk '{s+=($1*$4)} END {printf "%d", s}');
