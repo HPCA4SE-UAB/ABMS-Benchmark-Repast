@@ -6,13 +6,22 @@ if [ "$#" -ne 1 ]; then
   exit 1
 fi
 
+Ttotal_time=0;
+Tmain_time=0;
+Tcompute_time=0;
+Tplay_time=0;
+Ttotal_byte=0;
+Tc=0;
+Ttotal=0;
+Tn=0;
+
 printf 'execution total_time main_time compute_time play_time total_bytes c total agents \n';
 for a in $(seq 1 $1);
 do
         #total_time=$(grep "Execution time" output/sortida$a.txt | awk '{print $4}' | sed -n "$a"'p');
         total_time=$(grep "Execution time" output/sortida$a.txt | awk '{print $4}');
 	main_time=$(grep mean -A 20 output/pprof_out$a | grep main | awk '{print $3}');
-        compute_time=$(grep mean -A 20 output/pprof_out$a | grep compute | awk '{print $3}');
+        compute_time=$(grep mean -A 200 output/pprof_out$a | grep compute | awk '{print $3}');
         play_time=$(grep mean -A 20 output/pprof_out$a | grep play | awk '{print $3}');
         total_byte=$(grep "Message size received from all nodes"  output/pprof_out$a | awk '{s+=($1*$4)} END {printf "%d", s}');
 	if [ $a = "1" ]; then
@@ -25,4 +34,24 @@ do
 		n=$(sed -n 22p output/agent_total_data_$a.csv | grep "100," | awk -F, '{print $4}');
 	fi
 	printf '%d %s %s %s %s %s %s %s %s\n' $a $total_time $main_time $compute_time $play_time $total_byte $c $total $n;
+
+        Ttotal_time=$(expr $Ttotal_time + $total_time);
+	Tmain_time=$(expr $Tmain_time + $main_time);
+	Tcompute_time=$(expr $Tcompute_time + $compute_time);
+	Tplay_time=$(expr $Tplay_time + $play_time);
+	Ttotal_byte=$(expr $Ttotal_byte + $total_byte);
+	Tc=$(expr $Tc + $c);
+	Ttotal=$(expr $Ttotal + $total);
+	Tn=$(expr $Tn + $n);
 done
+
+Ttotal_time=$(expr $Ttotal_time / $a);
+Tmain_time=$(expr $Tmain_time / $a);
+Tcompute_time=$(expr $Tcompute_time / $a);
+Tplay_time=$(expr $Tplay_time / $a);
+Ttotal_byte=$(expr $Ttotal_byte / $a);
+Tc=$(expr $Tc / $a);
+Ttotal=$(expr $Ttotal / $a);
+Tn=$(expr $Tn / $a);
+
+printf 'm %s %s %s %s %s %s %s %s\n' $Ttotal_time $Tmain_time $Tcompute_time $Tplay_time $Ttotal_byte $Tc $Ttotal $Tn;
