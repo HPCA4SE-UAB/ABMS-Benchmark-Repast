@@ -1,4 +1,4 @@
-o "Get results from execution"
+echo "Get results from execution"
 
 if [ "$#" -ne 1 ]; then
   echo "Usage: $0 num_executions" >&2
@@ -19,9 +19,9 @@ for a in $(seq 1 $1);
 do
         #total_time=$(grep "Execution time" output/sortida$a.txt | awk '{print $4}' | sed -n "$a"'p');
         total_time=$(grep "Execution time" output/sortida$a.txt | awk '{print $4}');
-        main_time=$(grep mean -A 20 output/pprof_out$a | grep main | awk '{print $3}');
-        compute_time=$(grep mean -A 1200 output/pprof_out$a | grep compute | awk '{print $3}');
-        play_time=$(grep mean -A 20 output/pprof_out$a | grep play | awk '{print $3}');
+        main_time=$(cat output/pprof_out$a | sed -n -e '/mean/,$p' | grep " main " | awk '{print $3}');
+        compute_time=$(cat output/pprof_out$a | sed -n -e '/mean/,$p' | grep "::compute" | awk '{print $3}'| cut -d'.' -f1);
+        play_time=$(cat output/pprof_out$a | sed -n -e '/mean/,$p' | grep "::play" | awk '{print $3}');
         total_byte=$(grep "Message size received from all nodes"  output/pprof_out$a | awk '{s+=($1*$4)} END {printf "%d", s}');
         num_lin=$(tail -1 output/agent_total_data.csv | cut -d',' -f1)
         if [ $a = "1" ]; then
@@ -33,7 +33,8 @@ do
                 total=$(tail output/agent_total_data_$a.csv | grep "^${num_lin}," | awk -F, '{printf "%d", $2/$4}');
                 n=$(tail output/agent_total_data_$a.csv | grep "^${num_lin}," | awk -F, '{print $4}');
         fi
-        printf '%d %d %d %d %d %d %d %d %d\n' $a $total_time $main_time $compute_time $play_time $total_byte $c $total $n;
+
+        printf '%d %s %s %s %s %s %s %s %s\n' $a $total_time $main_time $compute_time $play_time $total_byte $c $total $n;
 
         Ttotal_time=$(expr $Ttotal_time + $total_time);
         Tmain_time=$(expr $Tmain_time + $main_time);
