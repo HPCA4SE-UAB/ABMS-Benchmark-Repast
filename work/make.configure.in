@@ -1,0 +1,40 @@
+#********************************************************
+# global options
+#********************************************************
+SHELL=@SHELL@
+PREFIX=@prefix@
+ARCH=@ARCH@
+ARC=@ARCH@
+LDFLAGS=@LDFLAGS@
+CXXFLAGS=@CXXFLAGS@
+
+# Destinations for library and executable installation (relative to src directory)
+GCC=@CC@
+GXX=@CXX@
+
+LIBRARY_DEST=@prefix@/lib
+PROGRAMS_DEST=@prefix@/bin
+
+#MPICXX=tau_cxx.sh -std=c++11
+MPICXX=@MPICXX@
+MAKE=make
+LINKER=ld
+MV=mv
+CP=cp
+RM=rm -f
+MKDIR=mkdir -p
+
+#********************************************************
+# configuration and dependencies                *
+#********************************************************
+BOOST_INC_DIR=@BOOST_INC_DIR@
+BOOST_LIB_DIR=@BOOST_LIB_DIR@
+
+REPAST_INC_DIR=@REPAST_INC_DIR@
+REPAST_LIB_DIR=@REPAST_LIB_DIR@
+
+REPAST_LIB=-lrepast_hpc-2.3.0
+BOOST_LIBS=-lboost_mpi-mt -lboost_serialization-mt -lboost_system-mt -lboost_filesystem-mt
+FFTW3_LIB=-lfftw3
+
+REPAST_HPC_DEFINES=@REPAST_HPC_DEFINES@
