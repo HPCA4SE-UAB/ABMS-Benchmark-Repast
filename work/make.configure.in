@@ -29,12 +29,13 @@ MKDIR=mkdir -p
 #********************************************************
 BOOST_INC_DIR=@BOOST_INC_DIR@
 BOOST_LIB_DIR=@BOOST_LIB_DIR@
+OPENMPI_LIB_DIR=@OPENMPI_LIB_DIR@
 
 REPAST_INC_DIR=@REPAST_INC_DIR@
 REPAST_LIB_DIR=@REPAST_LIB_DIR@
 
 REPAST_LIB=-lrepast_hpc-2.3.0
-BOOST_LIBS=-lboost_mpi-mt -lboost_serialization-mt -lboost_system-mt -lboost_filesystem-mt
-FFTW3_LIB=-lfftw3
+BOOST_LIBS=-lboost_mpi-mt -lboost_serialization-mt -lboost_system-mt -lboost_filesystem-mt -lmpi -lmpi_cxx -lstdc++
+FFTW3_LIB=-lfftw3 -lm
 
 REPAST_HPC_DEFINES=@REPAST_HPC_DEFINES@

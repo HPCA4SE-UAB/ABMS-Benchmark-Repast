@@ -107,6 +107,13 @@ AC_ARG_WITH(repast-libdir,
             [AS_HELP_STRING([--with-repast-libdir],[REPAST library directory])],
 [REPAST_LIB_DIR="${withval}/";],)
 
+# openmpi
+
+AC_ARG_WITH(openmpi-libdir,
+            [AS_HELP_STRING([--with-openmpi-libdir],[OpenMPI library directory])],
+[OPENMPI_LIB_DIR="${withval}/";],)
+
+
 
 
 ############################################################
@@ -118,7 +125,7 @@ if test "x$WITH_TAU" != "x" ; then
 	MPICXX="tau_cxx.sh -std=c++11"
 	REPAST_HPC_DEFINES="-tau_makefile=/home/caos/amoreno/sfw/tau-2.26.3/x86_64/lib/Makefile.tau-mpi-pdt -tau_options=-optCompInst"
 else
-	MPICXX="mpicc"
+	MPICXX="mpicc -std=c++11"
 fi
 
 
@@ -152,7 +159,11 @@ if test "x$REPAST_LIB_DIR" != "x" ; then
 fi
 
 
+# --------------------- openmpi -------------------------- # 
 
+if test "x$OPENMPI_LIB_DIR" != "x" ; then
+	LDFLAGS="-L${OPENMPI_LIB_DIR} ${LDFLAGS}"
+fi
 
 ############################################################
 #                      CHECKING                            #
@@ -188,6 +199,7 @@ AC_SUBST([BOOST_INC_DIR], ["${BOOST_INC_DIR}"])
 AC_SUBST([BOOST_LIB_DIR], ["${BOOST_LIB_DIR}"])
 AC_SUBST([REPAST_INC_DIR], ["${REPAST_INC_DIR}"])
 AC_SUBST([REPAST_LIB_DIR], ["${REPAST_LIB_DIR}"])
+AC_SUBST([OPENMPI_LIB_DIR], ["${OPENMPI_LIB_DIR}"])
 AC_SUBST([SHELL], [$SHELL])
 AC_SUBST([LDFLAGS], ["${LDFLAGS}"])
 AC_SUBST([CXXFLAGS], ["${CXXFLAGS}"])
