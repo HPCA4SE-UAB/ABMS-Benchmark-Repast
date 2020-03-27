@@ -1,9 +1,8 @@
 #!/bin/bash
 #SBATCH --partition=nodo.q
-#SBATCH --nodes=3
-#SBATCH --ntasks=32                  # Number of MPI ranks
+#SBATCH --nodes=1
+#SBATCH --ntasks=12                  # Number of MPI ranks
 #SBATCH --exclusive
-#SBATCH --time=10:00:00
 #SBATCH --output=output/outputslurm.%N.%j.out
 #SBATCH --error=output/outputslurm.%N.%j.err
 #SBATCH --mail-type=END
@@ -35,11 +34,7 @@ export PATH=/home/caos/amoreno/sfw/tau-2.26.3/x86_64/bin/:$PATH
 export TAU_COMM_MATRIX=1
 export LD_LIBRARY_PATH=/home/caos/amoreno/sfw/lib/:/home/caos/amoreno/sfw/Boost/Boost_1.61/lib/:$LD_LIBRARY_PATH
 #export TAU_TRACE=1
-#for a in 1 2 3 4 5 6 7 8 9 10; 
-#for a in 1 ; 
-#do mpiexec -n 32 bin/Model.exe props/config.props props/model.props;
-mpiexec -n 32 bin/Model.exe props/config.props props/model.props;
-pprof -p > output/pprof_out;
-#done
+mpiexec -n 12 bin/Model.exe props/config.props props/model.propsi >output/sortida1.txt ;
+pprof -p > output/pprof_out1;
 date
 
