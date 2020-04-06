@@ -258,9 +258,11 @@ void RepastHPCAgent::play(repast::SharedContext<RepastHPCAgent>* context,
 		}
 
 		bool iCooperated = cooperate();                          // Do I cooperate?
+		bool otherCooperated = (*agentToPlay)->cooperate();	// Does other agent cooperate? 
+
 		double payoff = (iCooperated ?
-			((*agentToPlay)->cooperate() ?  7 : 1) :     // If I cooperated, did my opponent?
-			((*agentToPlay)->cooperate() ? 10 : 3));     // If I didn't cooperate, did my opponent?
+			( otherCooperated ?  7 : 1) :     // If I cooperated, did my opponent?
+			( otherCooperated ? 10 : 3));     // If I didn't cooperate, did my opponent?
 		if(iCooperated) cPayoff += payoff;
 		totalPayoff             += payoff;
 		
