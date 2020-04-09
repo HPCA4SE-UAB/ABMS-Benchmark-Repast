@@ -28,6 +28,7 @@
 #include "repast_hpc/Point.h"
 #include <fftw3.h>
 #include <math.h>
+#include <cmath>
 #include <string.h>
 #include "Model.h"
 
@@ -206,6 +207,28 @@ double RepastHPCAgent::frand(void) {
 	return value;
 }
 
+/*
+ *    Class: RepastHPCAgent  
+ * Function: isIntoCircle
+ * --------------------
+ * check if distance between two points is less than or equal
+ * 
+ * x,y: position A coordinates
+ * xCircle,yCircle: posicion B coordinates
+ * rCircle: distance to check between position A to B
+ *
+ * returns: true distance between A to B is less than or equal rCircle
+ *          false distance between A to B is more than rCicle
+ */
+bool RepastHPCAgent::isIntoCircle(int x, int y, int xCircle, int yCircle, int rCircle) {
+        double dist = sqrt(pow(x-xCircle, 2)+pow(y-yCircle, 2));
+
+        if(dist <= rCircle) {
+                return true;
+        } else {
+                return false;
+        }
+}
 
 /*
  *    Class: RepastHPCAgent  
@@ -243,6 +266,8 @@ void RepastHPCAgent::play(repast::SharedContext<RepastHPCAgent>* context,
 	int i=0;
     
 	std::vector<int> agentLoc;
+       	std::vector<int> agentLocToPlay;
+
 	space->getLocation(id_, agentLoc);
 	repast::Point<int> center(agentLoc);
 	repast::Moore2DGridQuery<RepastHPCAgent> moore2DQuery(space);
@@ -251,24 +276,32 @@ void RepastHPCAgent::play(repast::SharedContext<RepastHPCAgent>* context,
 	double cPayoff     = 0;
 	double totalPayoff = 0;
 	std::vector<RepastHPCAgent*>::iterator agentToPlay = agentsToPlay.begin();
+
 	while(agentToPlay != agentsToPlay.end()){
 		if ( id_ == ((*agentToPlay)->getId()) ){ 
 			agentToPlay++;	
 			continue; // Do not play with himself
 		}
 
-		bool iCooperated = cooperate();                          // Do I cooperate?
-		bool otherCooperated = (*agentToPlay)->cooperate();	// Does other agent cooperate? 
+        	space->getLocation(((*agentToPlay)->getId()), agentLocToPlay);
+		if (isIntoCircle(agentLoc[0], agentLoc[1], agentLocToPlay[0], agentLocToPlay[1], RADIOUS)){
 
-		double payoff = (iCooperated ?
-			( otherCooperated ?  7 : 1) :     // If I cooperated, did my opponent?
-			( otherCooperated ? 10 : 3));     // If I didn't cooperate, did my opponent?
-		if(iCooperated) cPayoff += payoff;
-		totalPayoff             += payoff;
+			bool iCooperated = cooperate();                          // Do I cooperate?
+			bool otherCooperated = (*agentToPlay)->cooperate();	// Does other agent cooperate? 
+
+			double payoff = (iCooperated ?
+				( otherCooperated ?  7 : 1) :     // If I cooperated, did my opponent?
+				( otherCooperated ? 10 : 3));     // If I didn't cooperate, did my opponent?
+			if(iCooperated) cPayoff += payoff;
+			totalPayoff             += payoff;
 		
+			i++;
+			if (i >= MAX_AGENTS_TO_PLAY) break;	//Control max number agents to play with
+
+		}
+			
 		agentToPlay++;
-		i++;
-		if (i >= MAX_AGENTS_TO_PLAY) break;	//Control max number agents to play with
+
     	}
 
 	c      += cPayoff;

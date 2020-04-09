@@ -101,7 +101,8 @@ public:
     void setm(char newm[]);
 	
     /* Actions */
-    double frand();    
+    double frand();
+    bool isIntoCircle(int x, int y, int xCircle, int yCircle, int rCircle);    
     void compute();
     bool cooperate();                                                 // Will indicate whether the agent cooperates or not; probability determined by = c / total
     void play(repast::SharedContext<RepastHPCAgent>* context,
