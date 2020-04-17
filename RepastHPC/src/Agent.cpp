@@ -242,9 +242,18 @@ bool RepastHPCAgent::isIntoCircle(int x, int y, int xCircle, int yCircle, int rC
  */
 void RepastHPCAgent::compute() {
 	fftw_plan p;
+	double fft_out_sum = 0;
         	        							
 	p = fftw_plan_dft_1d(N, in, out, FFTW_FORWARD, FFTW_ESTIMATE);
 	fftw_execute(p); 
+
+        for(int i=0; i < N ; i++) {
+                fft_out_sum += out[i][0];
+                fft_out_sum += out[i][1];
+        }
+
+	//cout << "fft_out_sum " << fft_out_sum << endl;
+
 	fftw_destroy_plan(p);	
 }
 
