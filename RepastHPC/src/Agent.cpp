@@ -32,6 +32,9 @@
 #include <string.h>
 #include "Model.h"
 
+fftw_complex* RepastHPCAgent::in = nullptr;
+
+
 /*
  *    Class: RepastHPCAgent  
  * Function: RepastHPCAgent
@@ -47,6 +50,10 @@ RepastHPCAgent::RepastHPCAgent(repast::AgentId id, std::string _initialFFTVector
 	for (i=0; i<COM_BUFFER_SIZE; i++)
 		m[i]=0;
 
+        out = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * N);
+
+	if (in != nullptr) return;
+
 	//Load fft vector file
 	FILE *fp;
 
@@ -60,7 +67,6 @@ RepastHPCAgent::RepastHPCAgent(repast::AgentId id, std::string _initialFFTVector
         fftw_plan p;
         reinterpret_cast<fftw_complex*>(in);
         in = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * N);
-        out = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * N);
 
         for (i = 0; i < N; i++ ) {
 		fscanf(fp, "%lf %lf", &in[i][0], &in[i][1]);
@@ -89,6 +95,10 @@ RepastHPCAgent::RepastHPCAgent(repast::AgentId id, double newC, double newTotal,
 	for (int i=0; i<COM_BUFFER_SIZE; i++)
 		m[i]=newm[i];
 
+        out = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * N);
+
+	if (in != nullptr) return;
+
 	//Load fft vector file
 	FILE *fp;
 
@@ -102,7 +112,6 @@ RepastHPCAgent::RepastHPCAgent(repast::AgentId id, double newC, double newTotal,
         fftw_plan p;
         reinterpret_cast<fftw_complex*>(in);
         in = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * N);
-        out = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * N);
 
         for (int i = 0; i < N; i++ ) {
 		fscanf(fp, "%lf %lf", &in[i][0], &in[i][1]);

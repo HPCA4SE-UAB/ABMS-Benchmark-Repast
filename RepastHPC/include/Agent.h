@@ -77,7 +77,8 @@ private:
     char		m[COM_BUFFER_SIZE];
     std::string 	initialFFTVectorFile;
     int 		N;
-    fftw_complex 	*in, *out;
+    static fftw_complex 	*in;
+    fftw_complex 	*out;
 	
 public:
     RepastHPCAgent(repast::AgentId id, std::string _initialFFTVectorFile);
