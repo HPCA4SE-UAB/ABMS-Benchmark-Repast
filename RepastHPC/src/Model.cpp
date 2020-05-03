@@ -37,6 +37,9 @@
 
 #include "Model.h"
 
+fftw_complex	*in = nullptr;
+
+
 /*
  *    Class: RepastHPCAgentPackageProvider  
  * Function: RepastHPCAgentPackageProvider
@@ -66,7 +69,7 @@ void RepastHPCAgentPackageProvider::providePackage(RepastHPCAgent * agent, std::
     char newm[COM_BUFFER_SIZE];
     agent->getm(newm);
     
-    RepastHPCAgentPackage package(id.id(), id.startingRank(), id.agentType(), id.currentRank(), agent->getC(), agent->getTotal(), newm, agent->getinitialFFTVectorFile());
+    RepastHPCAgentPackage package(id.id(), id.startingRank(), id.agentType(), id.currentRank(), agent->getC(), agent->getTotal(), newm, agent->getN());
     out.push_back(package);
 }
 
@@ -113,7 +116,7 @@ RepastHPCAgentPackageReceiver::RepastHPCAgentPackageReceiver(repast::SharedConte
  */
 RepastHPCAgent * RepastHPCAgentPackageReceiver::createAgent(RepastHPCAgentPackage package){
     repast::AgentId id(package.id, package.rank, package.type, package.currentRank);
-    return new RepastHPCAgent(id, package.c, package.total, package.m, package.initialFFTVectorFile);
+    return new RepastHPCAgent(id, package.c, package.total, package.m, package.N, in);
 }
 
 /*
@@ -315,8 +318,8 @@ RepastHPCModel::~RepastHPCModel(){
 	delete props;
 	delete provider;
 	delete receiver;
-	
 	delete agentValues;
+	delete in;
 }
 
 /*
@@ -334,8 +337,28 @@ void RepastHPCModel::init(){
 	int x,y,z;
 	char newm[COM_BUFFER_SIZE] = "123456789";
 	FILE *fp;
-	u_int32_t id; 
-	
+	u_int32_t idg; 
+
+        //Load fft vector file
+	int i;
+
+        fp = fopen(initialFFTVectorFile.c_str(),"r");
+        if( feof(fp) ) return ;
+
+        fscanf(fp, "%d", &N);
+
+        reinterpret_cast<fftw_complex*>(in);
+        in = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * N);
+
+        for (i = 0; i < N; i++ ) {
+                fscanf(fp, "%lf %lf", &in[i][0], &in[i][1]);
+                if( feof(fp) ) {
+                        break ;
+                }
+        }
+
+        fclose(fp);
+
 	float xmin = discreteSpace->dimensions().origin().getX();
 	float ymin = discreteSpace->dimensions().origin().getY();
 	float xmax = discreteSpace->dimensions().origin().getX() + discreteSpace->dimensions().extents().getX();
@@ -345,7 +368,7 @@ void RepastHPCModel::init(){
 	fp = fopen(initialAgentsFile.c_str(),"r");
 
 	while(1) {
-		fscanf(fp, "%u %d %d %d", &id, &x, &y, &z);
+		fscanf(fp, "%u %d %d %d", &idg, &x, &y, &z);
 		if( feof(fp) ) { 
 			break ;
 		}
@@ -354,12 +377,12 @@ void RepastHPCModel::init(){
 	                repast::Point<int> initialLocation(x,y);
         	        repast::AgentId id(countOfAgents, rank, 0);
                 	id.currentRank(rank);
-                	RepastHPCAgent* agent = new RepastHPCAgent(id, initialFFTVectorFile);
+                	RepastHPCAgent* agent = new RepastHPCAgent(id, N, in);
                 	agent->setm(newm); 
                 	context.addAgent(agent);
                 	discreteSpace->moveTo(id, initialLocation);
 			countOfAgents++;
-			//printf("rank %d: %d %d \n", rank, x, y);
+			//printf("rank %d(%d) 8: %d %d \n", rank, idg, x, y);
 		}
 
 	}	
@@ -441,8 +464,8 @@ void RepastHPCModel::doSomething(){
 			repast::AgentId newid(countOfAgents, rank, 0);
 			countOfAgents++;
 			id.currentRank(rank);
-			RepastHPCAgent* agent = new RepastHPCAgent(newid, initialFFTVectorFile);
-			agent->setm(newm); //amv - inicialitzo el array
+			RepastHPCAgent* agent = new RepastHPCAgent(newid, N, in);
+			agent->setm(newm); 
 			context.addAgent(agent);
 			discreteSpace->moveTo(newid, initialLocation);
 

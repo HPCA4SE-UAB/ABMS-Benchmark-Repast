@@ -77,13 +77,13 @@ private:
     char		m[COM_BUFFER_SIZE];
     std::string 	initialFFTVectorFile;
     int 		N;
-    static fftw_complex 	*in;
     fftw_complex 	*out;
+    fftw_complex 	*in;
 	
 public:
-    RepastHPCAgent(repast::AgentId id, std::string _initialFFTVectorFile);
+    RepastHPCAgent(repast::AgentId id, int N, fftw_complex *in);
 	RepastHPCAgent(){}
-    RepastHPCAgent(repast::AgentId id, double newC, double newTotal, char newm[], std::string _initialFFTVectorFile);
+    RepastHPCAgent(repast::AgentId id, double newC, double newTotal, char newm[], int N, fftw_complex *in);
 	
     ~RepastHPCAgent();
 	
@@ -95,7 +95,7 @@ public:
     /* Getters specific to this kind of Agent */
     double getC(){                                      return c;      }
     double getTotal(){                                  return total;  }
-    std::string getinitialFFTVectorFile(){		return initialFFTVectorFile;}
+    int getN(){						return N;}
 	
     /* Setter */
     void set(int currentRank, double newC, double newTotal);
@@ -125,11 +125,11 @@ public:
     double c;
     double total;
     char	m[COM_BUFFER_SIZE];
-    std::string         initialFFTVectorFile; 
+    int    N;
 	
     /* Constructors */
     RepastHPCAgentPackage(); // For serialization
-    RepastHPCAgentPackage(int _id, int _rank, int _type, int _currentRank, double _c, double _total, char _m[], std::string _initialFFTVectorFile);
+    RepastHPCAgentPackage(int _id, int _rank, int _type, int _currentRank, double _c, double _total, char _m[], int _N);
 	
     /* For archive packaging */
     template<class Archive>
@@ -141,7 +141,7 @@ public:
         ar & c;
         ar & total;
         ar & m;
-	ar & initialFFTVectorFile;
+	ar & N;
     }
 };
 

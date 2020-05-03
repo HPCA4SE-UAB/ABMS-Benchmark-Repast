@@ -21,8 +21,6 @@
 *  along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
-
 #include "Agent.h"
 #include "repast_hpc/Moore2DGridQuery.h"
 #include "repast_hpc/Point.h"
@@ -32,9 +30,6 @@
 #include <string.h>
 #include "Model.h"
 
-fftw_complex* RepastHPCAgent::in = nullptr;
-
-
 /*
  *    Class: RepastHPCAgent  
  * Function: RepastHPCAgent
@@ -42,40 +37,15 @@ fftw_complex* RepastHPCAgent::in = nullptr;
  * RepastHPCAgent class constructor
  * 
  * id: agents identificator
+ * _N: FFT vector size
+ * _in: pointer to FFT input vector
  *
  * returns: -
  */
-RepastHPCAgent::RepastHPCAgent(repast::AgentId id, std::string _initialFFTVectorFile): id_(id), c(100), total(200){ 
+RepastHPCAgent::RepastHPCAgent(repast::AgentId id, int _N, fftw_complex *_in): id_(id), c(100), total(200), N(_N), in(_in){ 
 	int i;
 	for (i=0; i<COM_BUFFER_SIZE; i++)
 		m[i]=0;
-
-        out = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * N);
-
-	if (in != nullptr) return;
-
-	//Load fft vector file
-	FILE *fp;
-
-	initialFFTVectorFile = _initialFFTVectorFile;	
-
-	fp = fopen(_initialFFTVectorFile.c_str(),"r");
-	if( feof(fp) ) return ;
-
-	fscanf(fp, "%d", &N);                
-
-        fftw_plan p;
-        reinterpret_cast<fftw_complex*>(in);
-        in = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * N);
-
-        for (i = 0; i < N; i++ ) {
-		fscanf(fp, "%lf %lf", &in[i][0], &in[i][1]);
-                if( feof(fp) ) {
-                        break ;
-                }
-        }
-
-	fclose(fp);
 }
 
 /*
@@ -88,39 +58,14 @@ RepastHPCAgent::RepastHPCAgent(repast::AgentId id, std::string _initialFFTVector
  * newC: initial value of payoff counter when agent cooperates 
  * newTotal: initial value of total payoff counter
  * newm: initial data to data buffer in agents communications
+ * _N: FFT vector size
+ * _in: FFT input vector pointer
  *
  * returns: -
  */
-RepastHPCAgent::RepastHPCAgent(repast::AgentId id, double newC, double newTotal, char newm[], std::string _initialFFTVectorFile): id_(id), c(newC), total(newTotal){
+RepastHPCAgent::RepastHPCAgent(repast::AgentId id, double newC, double newTotal, char newm[], int _N, fftw_complex *_in): id_(id), c(newC), total(newTotal), N(_N), in(_in){
 	for (int i=0; i<COM_BUFFER_SIZE; i++)
 		m[i]=newm[i];
-
-        out = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * N);
-
-	if (in != nullptr) return;
-
-	//Load fft vector file
-	FILE *fp;
-
-	initialFFTVectorFile = _initialFFTVectorFile;
-	
-	fp = fopen(_initialFFTVectorFile.c_str(),"r");
-	if( feof(fp) ) return ;
-
-	fscanf(fp, "%d", &N);                
-
-        fftw_plan p;
-        reinterpret_cast<fftw_complex*>(in);
-        in = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * N);
-
-        for (int i = 0; i < N; i++ ) {
-		fscanf(fp, "%lf %lf", &in[i][0], &in[i][1]);
-                if( feof(fp) ) {
-                        break ;
-                }
-        }
-
-	fclose(fp);
 }
 
 /*
@@ -134,7 +79,6 @@ RepastHPCAgent::RepastHPCAgent(repast::AgentId id, double newC, double newTotal,
  * returns: -
  */
 RepastHPCAgent::~RepastHPCAgent(){ 
-	fftw_free(in); fftw_free(out);
 }
 
 /*
@@ -253,6 +197,9 @@ void RepastHPCAgent::compute() {
 	fftw_plan p;
 	double fft_out_sum = 0;
         	        							
+	reinterpret_cast<fftw_complex*>(out);
+        out = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * N);
+
 	p = fftw_plan_dft_1d(N, in, out, FFTW_FORWARD, FFTW_ESTIMATE);
 	fftw_execute(p); 
 
@@ -264,6 +211,7 @@ void RepastHPCAgent::compute() {
 	//cout << "fft_out_sum " << fft_out_sum << endl;
 
 	fftw_destroy_plan(p);	
+	fftw_free(out);
 }
 
 
@@ -420,12 +368,12 @@ RepastHPCAgentPackage::RepastHPCAgentPackage(){
  * _c: value of payoff counter when agent cooperates 
  * _total: value of total payoff counter
  * _m: communication message
- * _initialFFTVectorFile: FFT vector file data
+ * _N: FFT vector file data size
  *
  * returns: -
  */
-RepastHPCAgentPackage::RepastHPCAgentPackage(int _id, int _rank, int _type, int _currentRank, double _c, double _total, char _m[], std::string _initialFFTVectorFile):
-id(_id), rank(_rank), type(_type), currentRank(_currentRank), c(_c), total(_total), initialFFTVectorFile(_initialFFTVectorFile){ 
+RepastHPCAgentPackage::RepastHPCAgentPackage(int _id, int _rank, int _type, int _currentRank, double _c, double _total, char _m[], int _N):
+id(_id), rank(_rank), type(_type), currentRank(_currentRank), c(_c), total(_total), N(_N){ 
 	for (int i=0; i<COM_BUFFER_SIZE; i++)
 		m[i]=_m[i];
 }

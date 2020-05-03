@@ -108,6 +108,8 @@ class RepastHPCModel{
 	int countOfAgents;
 	int procPerx;
 	int procPery;
+        int N;
+
 	std::string initialAgentsFile;
 	std::string initialFFTVectorFile;
 
