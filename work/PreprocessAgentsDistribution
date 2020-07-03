@@ -1,0 +1,11 @@
+#!/bin/bash
+
+if [ "$#" -ne 1 ]; then
+  echo "Usage: $0 file" >&2
+  exit 1
+fi
+
+# create file with agents coordinates
+cat $1 | grep "T(100)" | awk -F "[" '{print $2 $4}' | tr --delete , | tr --delete ] > node-100.data
+
+
