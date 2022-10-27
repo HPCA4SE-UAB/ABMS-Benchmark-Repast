@@ -436,6 +436,9 @@ void RepastHPCModel::doSomething(){
 	std::vector<RepastHPCAgent*> agents;
 	//context.selectAgents(repast::SharedContext<RepastHPCAgent>::LOCAL, countOfAgents, agents);
 	context.selectAgents(repast::SharedContext<RepastHPCAgent>::LOCAL, agents);
+
+	if (agents.size() == 0) return;
+
 	std::vector<RepastHPCAgent*>::iterator it = agents.begin();
 	while(it != agents.end()){
         	//std::cout << "Play agent: " << (*it)->getId() << std::endl;
