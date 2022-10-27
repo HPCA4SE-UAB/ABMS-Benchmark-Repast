@@ -5,8 +5,9 @@ SHELL=/bin/sh
 PREFIX=.
 ARCH=@ARCH@
 ARC=@ARCH@
-LDFLAGS=-L/home/caos/amoreno/sfw/lib/ -L/home/caos/amoreno/sfw/Boost/Boost_1.61/lib/ -L/home/caos/amoreno/sfw/lib/ 
-CXXFLAGS=-I/home/caos/amoreno/sfw/include/ -I/home/caos/amoreno/sfw/Boost/Boost_1.61/include/ -I/home/caos/amoreno/sfw/include/ -g -O2
+LDFLAGS=-L/lex/nfsshare/packages/openmpi/3.0.4/lib/ -L/lex/shared/projects/agent-base-modeling/sfw/repast_hpc-2.3.1/lib/ -L/lex/shared/projects/agent-base-modeling/sfw/lib/ -L/lex/shared/projects/agent-base-modeling/sfw/boost-1_61_0/lib/  
+CXXFLAGS=-I/lex/shared/projects/agent-base-modeling/sfw/repast_hpc-2.3.1/include/ -I/lex/shared/projects/agent-base-modeling/sfw/include/ -I/lex/shared/projects/agent-base-modeling/sfw/boost-1_61_0/include/ -g -O2
+
 
 # Destinations for library and executable installation (relative to src directory)
 GCC=gcc
@@ -16,7 +17,7 @@ LIBRARY_DEST=./lib
 PROGRAMS_DEST=./bin
 
 #MPICXX=tau_cxx.sh -std=c++11
-MPICXX=mpicc
+MPICXX=mpicc -std=c++11
 MAKE=make
 LINKER=ld
 MV=mv
@@ -27,14 +28,16 @@ MKDIR=mkdir -p
 #********************************************************
 # configuration and dependencies                *
 #********************************************************
-BOOST_INC_DIR=/home/caos/amoreno/sfw/Boost/Boost_1.61/include/
-BOOST_LIB_DIR=/home/caos/amoreno/sfw/Boost/Boost_1.61/lib/
+BOOST_INC_DIR=/lex/shared/projects/agent-base-modeling/sfw/boost-1_61_0/include/
+BOOST_LIB_DIR=/lex/shared/projects/agent-base-modeling/sfw/boost-1_61_0/lib/
+OPENMPI_LIB_DIR=/lex/nfsshare/packages/openmpi/3.0.4/lib/
 
-REPAST_INC_DIR=/home/caos/amoreno/sfw/include/
-REPAST_LIB_DIR=/home/caos/amoreno/sfw/lib/
+REPAST_INC_DIR=/lex/shared/projects/agent-base-modeling/sfw/repast_hpc-2.3.1/include/
+REPAST_LIB_DIR=/lex/shared/projects/agent-base-modeling/sfw/repast_hpc-2.3.1/lib/
 
-REPAST_LIB=-lrepast_hpc-2.3.0
-BOOST_LIBS=-lboost_mpi-mt -lboost_serialization-mt -lboost_system-mt -lboost_filesystem-mt
+REPAST_LIB=-lrepast_hpc-2.3.1
+BOOST_LIBS=-lboost_mpi-mt -lboost_serialization-mt -lboost_system-mt -lboost_filesystem-mt -lmpi -lstdc++ -lm 
 FFTW3_LIB=-lfftw3
 
 REPAST_HPC_DEFINES=
+
